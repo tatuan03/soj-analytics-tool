@@ -1,0 +1,37 @@
+# =========================
+# PYTHON & FASTAPI
+# =========================
+# Môi trường ảo (Virtual Environments)
+.venv/
+venv/
+env/
+ENV/
+
+# Cache và file biên dịch của Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# File môi trường chứa biến bảo mật (Quan trọng)
+.env
+.env.*
+*.env
+# Ngoại lệ: vẫn track file mẫu .env.example (an toàn, không chứa secret thật)
+!.env.example
+!**/.env.example
+
+# SQLite Database (Tránh push data test lên GitHub)
+*.sqlite3
+*.db
+
+# =========================
+# FRONTEND & HỆ ĐIỀU HÀNH
+# =========================
+# Thư mục Node.js (nếu sau này bạn dùng npm/npx cho Vue hoặc Bot)
+node_modules/
+dist/
+
+# File rác của hệ điều hành
+.DS_Store
+Thumbs.db
