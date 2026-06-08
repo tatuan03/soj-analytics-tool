@@ -61,9 +61,11 @@ def init_db() -> None:
     """
     Tạo toàn bộ bảng trong DB nếu chưa tồn tại.
 
-    Gọi 1 lần lúc khởi động app (xem main.py) hoặc trong script seed.
-    LƯU Ý: import model ở đây để SQLAlchemy "nhìn thấy" bảng trước khi create.
-    """
-    from app.models import license  # noqa: F401  (đăng ký bảng vào Base.metadata)
+    Sau khi gỡ Auth Layer, app hiện không còn model ORM nào nên hàm này thực
+    chất chỉ tạo file DB rỗng. Giữ lại để hạ tầng DB sẵn sàng khi sau này
+    DataAnalysisService cần lưu lịch sử phân tích.
 
+    LƯU Ý: khi thêm model mới, import nó vào đây để SQLAlchemy "nhìn thấy"
+    bảng trước khi create_all.
+    """
     Base.metadata.create_all(bind=engine)

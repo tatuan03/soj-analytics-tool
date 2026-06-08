@@ -19,21 +19,6 @@ class ServiceError(Exception):
             self.status_code = status_code
 
 
-class InvalidKeyError(ServiceError):
-    """Key không tồn tại hoặc sai."""
-    status_code = 401
-
-
-class KeyInactiveError(ServiceError):
-    """Key bị khóa hoặc đã hết hạn."""
-    status_code = 403
-
-
-class IpLimitExceededError(ServiceError):
-    """Vượt quá số IP tối đa cho phép trên một key."""
-    status_code = 403
-
-
 class InvalidFileError(ServiceError):
     """File upload sai định dạng / không phải CSV / không đọc được."""
     status_code = 400

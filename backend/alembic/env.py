@@ -25,9 +25,9 @@ if BASE_DIR not in sys.path:
 from app.core.config import settings          # noqa: E402
 from app.models.database import Base          # noqa: E402
 
-# (3) Import model để đăng ký bảng vào Base.metadata TRƯỚC khi autogenerate.
-#     Thêm dòng import cho mỗi file model mới của dự án.
-from app.models import license                # noqa: E402,F401
+# Import model để đăng ký bảng vào Base.metadata TRƯỚC khi autogenerate.
+# Sau khi gỡ Auth Layer, app chưa còn model nào. Thêm dòng import cho mỗi
+# file model MỚI của dự án ở đây khi cần.
 
 # ---------------------------------------------------------------------------
 # Cấu hình logging chuẩn của Alembic.

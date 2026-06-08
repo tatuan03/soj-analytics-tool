@@ -3,6 +3,9 @@
 Backend cho hệ thống "Phân tích số liệu game", tổ chức theo mô hình
 **Router → Service → Model** để dễ chia việc nhóm và dễ scale.
 
+> **Pivot:** Hệ thống đã được mở **PUBLIC hoàn toàn** — gỡ bỏ License Key, JWT
+> và IP Tracking để tối ưu trải nghiệm, tập trung vào sức mạnh phân tích CSV.
+
 ## Cấu trúc thư mục
 
 ```
@@ -10,31 +13,28 @@ backend/
 ├── app/
 │   ├── main.py            # Khởi tạo app, CORS, include router
 │   ├── core/
-│   │   ├── config.py      # Cấu hình nạp từ .env
-│   │   └── security.py    # Tạo & verify JWT
+│   │   └── config.py      # Cấu hình nạp từ .env
 │   ├── models/            # Tầng MODEL (SQLAlchemy)
-│   │   ├── database.py    # engine, session, get_db (DI), init_db
-│   │   └── license.py     # bảng LicenseKey
+│   │   └── database.py    # engine, session, get_db (DI), init_db
 │   ├── schemas/           # Pydantic request/response
-│   │   └── auth.py
+│   │   └── analyze.py     # contract dữ liệu cho Frontend
 │   ├── services/          # Tầng SERVICE (business logic)
-│   │   ├── auth_srv.py    # logic đăng nhập + quản lý IP
-│   │   ├── data_srv.py    # << NƠI ĐIỀN THUẬT TOÁN PHÂN TÍCH >>
+│   │   ├── data_srv.py    # << THUẬT TOÁN PHÂN TÍCH CSV >>
 │   │   └── exceptions.py  # exception nghiệp vụ
 │   └── api/               # Tầng ROUTER
 │       ├── deps.py        # Dependency Injection dùng chung
-│       └── auth.py        # /api/v1/auth/login
-├── scripts/seed.py        # tạo DB + key mẫu để test
+│       └── analyze.py     # /api/v1/analyze/upload (PUBLIC)
+├── alembic/               # Database migrations
 ├── requirements.txt
 └── .env.example
 ```
 
 ## Phân chia công việc gợi ý (3 người)
 
-- **Người A — Hạ tầng & Auth:** `core/`, `models/`, `services/auth_srv.py`, `api/auth.py`.
-- **Người B — Phân tích dữ liệu:** `services/data_srv.py` (điền các hàm `parse_csv`,
-  `compute_player_metrics`, `summarize_camps`) + router data mới.
-- **Người C — Tích hợp & Frontend:** kết nối Vue với API, quản lý license/admin, viết test.
+- **Người A — Hạ tầng & API:** `core/`, `models/`, `api/`, CORS, deploy.
+- **Người B — Phân tích dữ liệu:** `services/data_srv.py` (`parse_csv`,
+  `compute_player_metrics`, `summarize_camps`) + `schemas/analyze.py`.
+- **Người C — Tích hợp & Frontend:** kết nối Vue với API, biểu đồ ECharts, viết test.
 
 ## Cài đặt & chạy
 
@@ -50,10 +50,9 @@ pip install -r requirements.txt
 # 3. Tạo file cấu hình
 copy .env.example .env        # Windows
 # cp .env.example .env        # macOS/Linux
-# -> mở .env và đặt SECRET_KEY ngẫu nhiên
 
-# 4. Tạo DB + key mẫu (TEST-KEY-123)
-python -m scripts.seed
+# 4. (Tùy chọn) Áp dụng migration tạo schema DB
+alembic upgrade head
 
 # 5. Chạy server
 uvicorn app.main:app --reload
@@ -62,25 +61,24 @@ uvicorn app.main:app --reload
 - Swagger UI: http://127.0.0.1:8000/docs
 - Health check: http://127.0.0.1:8000/health
 
-## Thử đăng nhập
+## Thử phân tích CSV (không cần đăng nhập)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/v1/auth/login ^
-  -H "Content-Type: application/json" ^
-  -d "{\"key_code\": \"TEST-KEY-123\"}"
+curl -X POST http://127.0.0.1:8000/api/v1/analyze/upload ^
+  -F "file=@duong-dan/toi/match.csv"
 ```
 
 ## Luồng kiến trúc
 
 ```
 Client (Vue)
-   │  POST /api/v1/auth/login { key_code }
+   │  POST /api/v1/analyze/upload  (multipart: file CSV)   — PUBLIC, không token
    ▼
-api/auth.py        ← validate request, bắt lỗi -> HTTP status
+api/analyze.py     ← nhận file, validate, bắt ServiceError -> HTTP status
    │  gọi service (inject DB session qua Depends)
    ▼
-services/auth_srv  ← BUSINESS LOGIC: kiểm tra status/hạn/IP, sinh JWT
+services/data_srv  ← BUSINESS LOGIC: parse CSV, tính KD/KDA/tỷ lệ trị liệu...
    │
    ▼
-models/license.py  ← truy vấn & cập nhật bảng LicenseKey (SQLAlchemy)
+schemas/analyze.py ← trả JSON chuẩn cho Frontend vẽ ECharts
 ```

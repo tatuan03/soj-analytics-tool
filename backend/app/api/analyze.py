@@ -2,15 +2,13 @@
 Router cho luồng phân tích số liệu: /api/v1/analyze/...
 
 Bám sát kiến trúc team:
-  - Route được bảo vệ bằng JWT qua dependency get_current_user.
+  - Endpoint PUBLIC (không yêu cầu đăng nhập) — đã gỡ bỏ Auth Layer.
   - Chỉ điều phối: nhận file -> gọi service -> bắt ServiceError -> trả JSON.
   - KHÔNG chứa business logic (đặt trong DataAnalysisService).
 """
-from typing import Any, Dict
-
 from fastapi import APIRouter, Depends, File, UploadFile
 
-from app.api.deps import get_current_user, get_data_service
+from app.api.deps import get_data_service
 from app.schemas.analyze import AnalyzeResponse
 from app.services.data_srv import DataAnalysisService
 from app.services.exceptions import InvalidFileError, ServiceError
@@ -30,12 +28,11 @@ MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
 async def upload_and_analyze(
     file: UploadFile = File(..., description="File CSV export từ game"),
     service: DataAnalysisService = Depends(get_data_service),
-    current_user: Dict[str, Any] = Depends(get_current_user),  # yêu cầu JWT hợp lệ
 ):
     """
     Nhận file CSV, phân tích và trả về kết quả cho Frontend (Vue/ECharts).
 
-    Yêu cầu: header `Authorization: Bearer <token>` hợp lệ.
+    Endpoint PUBLIC — không cần đăng nhập.
 
     Trả về:
       - total_players, camps, players[], summary[] (xem schema AnalyzeResponse).

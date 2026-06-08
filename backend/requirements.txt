@@ -10,6 +10,3 @@ alembic>=1.13.0
 # ==== Config & validation ====
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
-
-# ==== Bảo mật / JWT ====
-PyJWT>=2.8.0

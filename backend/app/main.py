@@ -14,7 +14,7 @@ Tài liệu API tự sinh: http://127.0.0.1:8000/docs
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import analyze, auth
+from app.api import analyze
 from app.core.config import settings
 from app.models.database import init_db
 
@@ -64,7 +64,6 @@ def health_check():
 
 # ---------------------------------------------------------------------------
 # Đăng ký router. Mỗi nhóm tính năng = 1 router, include tại đây.
-# Thêm router mới (ví dụ data) chỉ cần 1 dòng include_router.
+# Ứng dụng mở PUBLIC: không còn router auth/login.
 # ---------------------------------------------------------------------------
-app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
 app.include_router(analyze.router, prefix=settings.API_V1_PREFIX)
