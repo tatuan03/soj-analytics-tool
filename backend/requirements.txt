@@ -1,12 +1,13 @@
-# ==== Core framework ====
 fastapi>=0.110.0
 uvicorn[standard]>=0.27.0
 python-multipart>=0.0.9          # bắt buộc cho UploadFile (form-data)
 
-# ==== Database (ORM) + Migration ====
 SQLAlchemy>=2.0.0
 alembic>=1.13.0
 
-# ==== Config & validation ====
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
+
+opencv-python-headless>=4.8.0
+pytesseract>=0.3.10
+numpy>=1.24.0
