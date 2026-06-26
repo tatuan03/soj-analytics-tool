@@ -18,16 +18,23 @@ backend/
 │   │   └── database.py    # engine, session, get_db (DI), init_db
 │   ├── schemas/           # Pydantic request/response
 │   │   └── analyze.py     # contract dữ liệu cho Frontend
+│   ├── schemas/           # Pydantic: analyze.py (CSV), ocr.py (ảnh)
 │   ├── services/          # Tầng SERVICE (business logic)
 │   │   ├── data_srv.py    # << THUẬT TOÁN PHÂN TÍCH CSV >>
+│   │   ├── ocr_srv.py     # OCR + OpenCV template matching (trích xuất ảnh)
 │   │   └── exceptions.py  # exception nghiệp vụ
-│   └── api/               # Tầng ROUTER
-│       ├── deps.py        # Dependency Injection dùng chung
-│       └── analyze.py     # /api/v1/analyze/upload (PUBLIC)
+│   ├── api/               # Tầng ROUTER
+│   │   ├── deps.py        # Dependency Injection dùng chung
+│   │   └── analyze.py     # /analyze/upload (CSV) + /analyze/extract-image (ảnh)
+│   └── assets/icons/      # Icon môn phái mẫu cho template matching
 ├── alembic/               # Database migrations
-├── requirements.txt
+├── tests/                 # Test tự động (pytest)
+├── requirements.txt       # Thư viện chạy thật
+├── requirements-dev.txt   # Thư viện cho dev/test
 └── .env.example
 ```
+
+> Hướng dẫn cài đặt – chạy – test đầy đủ (cả Frontend) xem ở `../HUONG_DAN.md`.
 
 ## Phân chia công việc gợi ý (3 người)
 
@@ -60,6 +67,14 @@ uvicorn app.main:app --reload
 
 - Swagger UI: http://127.0.0.1:8000/docs
 - Health check: http://127.0.0.1:8000/health
+
+## Chạy test
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+Mong đợi: **9 passed**. Test OCR tự skip nếu thiếu OpenCV; phần Tesseract được mock.
 
 ## Thử phân tích CSV (không cần đăng nhập)
 

@@ -12,6 +12,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.pytest_cache/
+.mypy_cache/
 
 # File môi trường chứa biến bảo mật (Quan trọng)
 .env

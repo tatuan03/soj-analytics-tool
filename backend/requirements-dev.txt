@@ -1,0 +1,6 @@
+# Thư viện chỉ dùng cho phát triển & test (không cần khi chạy production).
+# Cài: pip install -r requirements-dev.txt
+-r requirements.txt
+
+pytest>=8.0.0
+httpx>=0.27.0
