@@ -1,4 +1,4 @@
-@echo off
+eu @echo off
 title SOJ Analytics Tool
 echo ==========================================
 echo Starting SOJ Analytics Tool
@@ -20,8 +20,13 @@ if not exist ".venv" (
 echo Activating virtual environment...
 call .venv\Scripts\activate.bat
 
-echo Installing dependencies...
-pip install -r requirements.txt
+if not exist ".venv\.installed" (
+    echo Installing dependencies...
+    pip install -r requirements.txt
+    type nul > .venv\.installed
+) else (
+    echo Dependencies already installed. Skipping...
+)
 
 if not exist ".env" (
     echo Creating .env file from template...
